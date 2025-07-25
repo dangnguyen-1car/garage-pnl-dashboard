@@ -152,7 +152,6 @@ node seeds/create-admin.js
 ### **5. Start Application**
 
 Start both backend and frontend
-npm run start:all
 
 Or start separately
 npm run start:backend # Terminal 1

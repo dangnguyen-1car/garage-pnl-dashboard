@@ -152,4 +152,129 @@ router.get('/employee/:id', authorizeRoles('admin', 'manager'), async (req, res)
   }
 });
 
+// ✨ THÊM MỚI: GET /api/pnl/team/:id - P&L theo team
+router.get('/team/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { from, to } = req.query;
+    
+    // Validate parameters
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid team ID is required'
+      });
+    }
+
+    if (!from || !to) {
+      return res.status(400).json({
+        success: false,
+        message: 'Both from and to dates are required'
+      });
+    }
+
+    const teamData = await pnlService.getTeamPnl(parseInt(id), from, to);
+    
+    res.json({
+      success: true,
+      data: teamData
+    });
+  } catch (error) {
+    console.error('Error in team P&L:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
+  }
+});
+
+// ✨ THÊM MỚI: GET /api/pnl/department/:id/teams - Lấy danh sách teams theo department
+router.get('/department/:id/teams', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid department ID is required'
+      });
+    }
+
+    const teams = await pnlService.getTeamsByDepartment(parseInt(id));
+    
+    res.json({
+      success: true,
+      data: teams
+    });
+  } catch (error) {
+    console.error('Error getting teams by department:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
+  }
+});
+
+// ✨ THÊM MỚI: GET /api/pnl/team/:id/employees - Lấy danh sách employees theo team
+router.get('/team/:id/employees', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid team ID is required'
+      });
+    }
+
+    const employees = await pnlService.getEmployeesByTeam(parseInt(id));
+    
+    res.json({
+      success: true,
+      data: employees
+    });
+  } catch (error) {
+    console.error('Error getting employees by team:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
+  }
+});
+
+// ✨ THÊM MỚI: GET /api/pnl/employee/:id/orders - Lấy danh sách orders theo employee
+router.get('/employee/:id/orders', authorizeRoles('admin', 'manager'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { from, to } = req.query;
+    
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid employee ID is required'
+      });
+    }
+
+    if (!from || !to) {
+      return res.status(400).json({
+        success: false,
+        message: 'Both from and to dates are required'
+      });
+    }
+
+    const orders = await pnlService.getServiceOrdersByEmployee(parseInt(id), from, to);
+    
+    res.json({
+      success: true,
+      data: orders
+    });
+  } catch (error) {
+    console.error('Error getting orders by employee:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
+  }
+});
+
 module.exports = router;

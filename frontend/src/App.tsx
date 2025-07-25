@@ -1,4 +1,5 @@
-// frontend/src/App.tsx
+// frontend/src/App.tsx (Updated - Thay thế toàn bộ file)
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -11,6 +12,12 @@ import Layout from './components/Layout/Layout';
 import ProtectedRoute from './components/Common/ProtectedRoute';
 import { getCurrentUser } from './store/slices/authSlice';
 import { RootState } from './store/store';
+
+// ✨ NEW: Import drill-down pages
+import DepartmentPnlPage from './pages/pnl/DepartmentPnlPage';
+import TeamPnlPage from './pages/pnl/TeamPnlPage';
+import EmployeePnlPage from './pages/pnl/EmployeePnlPage';
+import ServicePnlPage from './pages/pnl/ServicePnlPage';
 
 const theme = createTheme({
   palette: {
@@ -47,6 +54,8 @@ const AppContent: React.FC = () => {
             isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
           } 
         />
+        
+        {/* ✨ UPDATED: Main Dashboard */}
         <Route
           path="/dashboard"
           element={
@@ -57,6 +66,53 @@ const AppContent: React.FC = () => {
             </ProtectedRoute>
           }
         />
+        
+        {/* ✨ NEW: P&L Drill-down Routes */}
+        <Route
+          path="/pnl/department/:departmentId"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <DepartmentPnlPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/pnl/team/:teamId"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <TeamPnlPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/pnl/employee/:employeeId"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <Layout>
+                <EmployeePnlPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/pnl/service/:serviceId"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ServicePnlPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Default routes */}
         <Route 
           path="/" 
           element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 

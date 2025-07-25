@@ -1,4 +1,5 @@
-// frontend/src/components/Dashboard/DashboardOverview.tsx
+// frontend/src/components/Dashboard/DashboardOverview.tsx (Updated - Thay thế toàn bộ file)
+
 import React, { useEffect } from 'react';
 import {
   Grid,
@@ -13,28 +14,27 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { RootState, AppDispatch } from '../../store/store';
 import { fetchDashboardOverview, setPeriod } from '../../store/slices/dashboardSlice';
-import { Doughnut, Bar, Line } from 'react-chartjs-2';
+import { setDrillDownContext, clearDrillDownData } from '../../store/slices/pnlSlice';
+import { Doughnut, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
-  PointElement,
   Title,
   Tooltip,
   Legend,
   ArcElement,
+  InteractionItem,
 } from 'chart.js';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
-  PointElement,
   Title,
   Tooltip,
   Legend,
@@ -43,6 +43,7 @@ ChartJS.register(
 
 const DashboardOverview: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { overview, loading, selectedPeriod } = useSelector((state: RootState) => state.dashboard);
 
   useEffect(() => {
@@ -59,6 +60,43 @@ const DashboardOverview: React.FC = () => {
       style: 'currency',
       currency: 'VND',
     }).format(amount);
+  };
+
+  // ✨ NEW: Handle department click for drill-down
+  const handleDepartmentClick = (event: any, elements: InteractionItem[]) => {
+    if (elements.length > 0) {
+      const clickedIndex = elements[0].index;
+      const departmentData = overview?.departmentPerformance?.[clickedIndex];
+      
+      if (departmentData) {
+        // Clear previous drill-down data
+        dispatch(clearDrillDownData());
+        
+        // Set drill-down context
+        dispatch(setDrillDownContext({
+          level: 'department',
+          id: clickedIndex + 1, // Assuming department IDs start from 1
+          name: departmentData.name,
+          breadcrumb: [
+            {
+              level: 'garage',
+              id: 'garage',
+              name: 'Tổng Garage',
+              path: '/dashboard'
+            },
+            {
+              level: 'department',
+              id: clickedIndex + 1,
+              name: departmentData.name,
+              path: `/pnl/department/${clickedIndex + 1}`
+            }
+          ]
+        }));
+        
+        // Navigate to department page
+        navigate(`/pnl/department/${clickedIndex + 1}`);
+      }
+    }
   };
 
   if (loading) {
@@ -85,7 +123,7 @@ const DashboardOverview: React.FC = () => {
     ],
   };
 
-  // Chart data cho Department Performance
+  // ✨ UPDATED: Chart data cho Department Performance với click handler
   const deptPerformanceData = {
     labels: overview.departmentPerformance?.map((dept: any) => dept.name) || [],
     datasets: [
@@ -93,11 +131,13 @@ const DashboardOverview: React.FC = () => {
         label: 'Doanh thu thực tế',
         data: overview.departmentPerformance?.map((dept: any) => dept.actualRevenue) || [],
         backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        hoverBackgroundColor: 'rgba(54, 162, 235, 0.8)',
       },
       {
         label: 'Mục tiêu',
         data: overview.departmentPerformance?.map((dept: any) => dept.targetRevenue) || [],
         backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        hoverBackgroundColor: 'rgba(255, 99, 132, 0.8)',
       },
     ],
   };
@@ -218,12 +258,15 @@ const DashboardOverview: React.FC = () => {
           </Card>
         </Grid>
 
-        {/* Department Performance */}
+        {/* ✨ UPDATED: Department Performance with click handler */}
         <Grid item xs={12} md={8}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Hiệu Suất Theo Bộ Phận
+                <Typography variant="body2" color="textSecondary">
+                  👆 Nhấp vào cột để xem chi tiết bộ phận
+                </Typography>
               </Typography>
               <Box height={300}>
                 <Bar 
@@ -231,10 +274,18 @@ const DashboardOverview: React.FC = () => {
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
+                    onClick: handleDepartmentClick,
                     plugins: {
                       legend: {
                         position: 'top',
                       },
+                      tooltip: {
+                        callbacks: {
+                          afterLabel: (context) => {
+                            return 'Nhấp để xem chi tiết';
+                          }
+                        }
+                      }
                     },
                     scales: {
                       y: {
@@ -245,6 +296,10 @@ const DashboardOverview: React.FC = () => {
                           }
                         }
                       }
+                    },
+                    onHover: (event, elements) => {
+                      (event.native?.target as HTMLElement).style.cursor = 
+                        elements.length > 0 ? 'pointer' : 'default';
                     }
                   }}
                 />

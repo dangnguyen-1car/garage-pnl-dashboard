@@ -1,4 +1,5 @@
 // frontend/src/store/store.ts (Updated)
+
 import { configureStore } from '@reduxjs/toolkit';
 import authSlice from './slices/authSlice';
 import pnlSlice from './slices/pnlSlice';

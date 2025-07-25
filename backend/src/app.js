@@ -16,6 +16,7 @@ app.use(cors({
 }));
 
 // Routes
+app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/pnl', require('./routes/pnl'));
 app.use('/api/dashboard', require('./routes/dashboard'));
