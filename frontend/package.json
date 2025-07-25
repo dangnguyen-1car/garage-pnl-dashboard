@@ -1,0 +1,57 @@
+{
+  "name": "garage-pnl-frontend",
+  "version": "1.0.0",
+  "description": "P&L Dashboard Frontend React App",
+  "private": true,
+  "homepage": ".",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^4.9.5",
+    "@mui/material": "^5.13.4",
+    "@mui/icons-material": "^5.13.4",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@reduxjs/toolkit": "^1.9.5",
+    "react-redux": "^8.1.0",
+    "react-router-dom": "^6.12.1",
+    "chart.js": "^4.3.0",
+    "react-chartjs-2": "^5.2.0",
+    "axios": "^1.4.0",
+    "moment": "^2.29.4",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/react-redux": "^7.1.25",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^20.3.1",
+    "react-scripts": "5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

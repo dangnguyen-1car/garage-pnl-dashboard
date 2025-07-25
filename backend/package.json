@@ -1,0 +1,28 @@
+{
+  "name": "garage-pnl-backend",
+  "version": "1.0.0",
+  "description": "P&L Dashboard Backend API",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "seed": "node seeds/generate-data.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "moment": "^2.29.4",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "jest": "^29.5.0"
+  },
+  "keywords": ["garage", "pnl", "dashboard", "api"],
+  "author": "Your Name",
+  "license": "MIT"
+}

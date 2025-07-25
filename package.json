@@ -1,0 +1,42 @@
+{
+  "name": "garage-pnl-dashboard",
+  "version": "1.0.0",
+  "description": "P&L Dashboard for Garage Management System with real-time analytics and KPI tracking",
+  "scripts": {
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm start",
+    "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "build:frontend": "cd frontend && npm run build",
+    "setup:db": "docker-compose up -d postgres",
+    "setup": "npm run setup:db && npm run install:all",
+    "dev": "npm run setup:db && npm run start:all"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dangnguyen-1car/garage-pnl-dashboard.git"
+  },
+  "keywords": [
+    "garage",
+    "pnl",
+    "dashboard",
+    "react",
+    "nodejs",
+    "typescript",
+    "postgresql",
+    "kpi",
+    "analytics",
+    "management"
+  ],
+  "author": "Dang Nguyen <dangnguyenmarketing@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dangnguyen-1car/garage-pnl-dashboard/issues"
+  },
+  "homepage": "https://github.com/dangnguyen-1car/garage-pnl-dashboard#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
