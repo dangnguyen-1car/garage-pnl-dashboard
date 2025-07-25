@@ -1,0 +1,102 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: garage_pnl_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+    
+    - name: Install Backend Dependencies
+      run: |
+        cd backend
+        npm ci
+    
+    - name: Run Backend Tests
+      run: |
+        cd backend
+        npm test
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: garage_pnl_test
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm run build
+    
+    - name: Run Frontend Tests
+      run: |
+        cd frontend
+        npm test -- --coverage --ci --watchAll=false
+
+  build:
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Build Application
+      run: |
+        npm run install:all
+        npm run build:frontend
+    
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-files
+        path: frontend/build/
